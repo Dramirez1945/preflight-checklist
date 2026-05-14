@@ -28,6 +28,25 @@ const GF        = `
   background-image: repeating-linear-gradient(transparent 0, transparent 17px, #d4d4d4 17px, #d4d4d4 18px);
   line-height: 18px;
 }
+/* ── Global scroll lock ─────────────────────────────────── */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  overscroll-behavior: none;
+}
+* { box-sizing: border-box; }
+/* Wizard & home: fixed to viewport, no scroll */
+.app-fixed {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+}
+/* Checklist print view: vertical scroll only */
+.print-view {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 /* ── Responsive ─────────────────────────────────────────── */
 /* Wizard: expand comfortably on large screens */
 @media (min-width: 640px) {
@@ -184,7 +203,7 @@ export default function App() {
   if (view==="home")  return <Home start={()=>{ setStep(0); setD(emptyState()); setView("wizard"); }}/>;
 
   return (
-    <div style={{ background:"#0d1018", minHeight:"100vh", padding:"28px 20px", fontFamily:SANS }}>
+    <div className="app-fixed" style={{ background:"#0d1018", padding:"28px 20px", fontFamily:SANS, overflowY:"auto" }}>
       <style>{GF}</style>
       <div className="wiz-wrap" style={{ maxWidth:480, margin:"0 auto" }}>
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
@@ -211,7 +230,7 @@ export default function App() {
 // ── Home ──────────────────────────────────────────────────────
 function Home({ start }) {
   return (
-    <div style={{ background:"#0d1018", minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
+    <div className="app-fixed" style={{ background:"#0d1018", display:"flex", alignItems:"center", justifyContent:"center" }}>
       <style>{GF}</style>
       <div style={{ textAlign:"center" }}>
         <AirLogo/>
@@ -336,10 +355,11 @@ function QtyStep({ d, patch, go, bk }) {
 
 function DateStep({ d, patch, go, bk }) {
   return (
-    <div>
+    <div style={{ width:"100%", boxSizing:"border-box" }}>
       <div style={qSt}>What date for this checklist?</div>
       <div style={{ fontSize:13, color:"rgba(255,255,255,.35)", marginBottom:14 }}>Backdate as needed</div>
-      <input className="aa-input" type="date" value={d.date} onChange={e=>patch({date:e.target.value})} style={{...inpS, colorScheme:"dark"}}/>
+      <input className="aa-input" type="date" value={d.date} onChange={e=>patch({date:e.target.value})}
+        style={{...inpS, colorScheme:"dark", width:"100%", maxWidth:"100%", boxSizing:"border-box"}}/>
       <div style={nvR}>
         <button className="aa-btn" style={bkB} onClick={bk}>← Back</button>
         <button className="aa-btn" style={nxB} onClick={()=>go()}>Next →</button>
@@ -527,7 +547,7 @@ function PrintOut({ d, done, back }) {
   };
 
   return (
-    <div>
+    <div className="print-view">
       <style>{`@media print{.np{display:none!important} @page{size:letter;margin:.4in}} ${GF}`}</style>
 
       {/* Toolbar */}
