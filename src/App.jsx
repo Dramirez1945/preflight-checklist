@@ -35,6 +35,18 @@ html, body {
   overscroll-behavior: none;
 }
 * { box-sizing: border-box; }
+/* iOS date input fix */
+input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+input[type="date"]::-webkit-date-and-time-value {
+  text-align: left;
+}
 /* Wizard & home: fixed to viewport, no scroll */
 .app-fixed {
   position: fixed;
@@ -359,7 +371,7 @@ function DateStep({ d, patch, go, bk }) {
       <div style={qSt}>What date for this checklist?</div>
       <div style={{ fontSize:13, color:"rgba(255,255,255,.35)", marginBottom:14 }}>Backdate as needed</div>
       <input className="aa-input" type="date" value={d.date} onChange={e=>patch({date:e.target.value})}
-        style={{...inpS, colorScheme:"dark", width:"100%", maxWidth:"100%", boxSizing:"border-box"}}/>
+        style={{...inpS, colorScheme:"dark", width:"100%", maxWidth:"100%", boxSizing:"border-box", padding:"14px 10px", fontSize:14}}/>
       <div style={nvR}>
         <button className="aa-btn" style={bkB} onClick={bk}>← Back</button>
         <button className="aa-btn" style={nxB} onClick={()=>go()}>Next →</button>
