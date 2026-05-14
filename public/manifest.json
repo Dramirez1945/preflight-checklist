@@ -1,0 +1,18 @@
+{
+  "name": "Advanced Air Preflight",
+  "short_name": "Preflight",
+  "description": "Advanced Air aircraft preflight / postflight checklist",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d1018",
+  "theme_color": "#0d1018",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
