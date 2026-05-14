@@ -534,11 +534,16 @@ function PrintOut({ d, done, back }) {
         proxy.style.cssText   = el.style.cssText;           // copy inline styles
         proxy.style.width     = rect.width  + "px";         // actual rendered width
         proxy.style.minHeight = rect.height + "px";
-        proxy.style.display   = el.tagName === "TEXTAREA" ? "block" : "inline-block";
+        proxy.style.display   = "block";                    // block so border spans full width (inline-block lets text overflow past box, making border appear narrow)
         proxy.style.overflow  = "visible";
         proxy.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "nowrap";
         proxy.style.lineHeight = cs.lineHeight;
         proxy.style.verticalAlign = "middle";
+        // Explicitly set border-bottom from computed style — cssText may not reliably
+        // carry shorthand vs. longhand resolution, and html2canvas needs the exact values
+        proxy.style.borderBottomWidth = cs.borderBottomWidth;
+        proxy.style.borderBottomStyle = cs.borderBottomStyle;
+        proxy.style.borderBottomColor = cs.borderBottomColor;
         proxy.textContent = el.value;
         el.insertAdjacentElement("afterend", proxy);
         el.style.display = "none";
