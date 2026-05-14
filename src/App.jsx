@@ -514,39 +514,50 @@ function PrintOut({ d, done, back }) {
 
       const doc = docRef.current;
 
-      // Reset zoom so we always capture at full 816px resolution
+      // 1. Reset zoom and force a synchronous reflow so getBoundingClientRect
+      //    returns unscaled dimensions (fixes mobile truncation from zoom offsets)
       const prevZoom = doc.style.zoom;
       doc.style.zoom = "1";
+      void doc.offsetWidth;
 
-      // Swap inputs/textareas → divs so html2canvas captures their values
+      // 2. Slightly extra right padding to prevent tail-# box clipping at edge
+      const prevPR = doc.style.paddingRight;
+      doc.style.paddingRight = "36pt";
+
+      // 3. Swap every input/textarea → a div whose width matches the
+      //    post-zoom-reset rendered size, so text never truncates
       const swaps = [];
       doc.querySelectorAll("input, textarea").forEach(el => {
-        const cs = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        const cs   = window.getComputedStyle(el);
         const proxy = document.createElement("div");
-        proxy.style.cssText = el.style.cssText;
-        proxy.style.display = el.tagName === "TEXTAREA" ? "block" : "inline-block";
-        proxy.style.width    = cs.width;
-        proxy.style.minHeight = cs.height;
-        proxy.style.overflow  = "hidden";
+        proxy.style.cssText   = el.style.cssText;           // copy inline styles
+        proxy.style.width     = rect.width  + "px";         // actual rendered width
+        proxy.style.minHeight = rect.height + "px";
+        proxy.style.display   = el.tagName === "TEXTAREA" ? "block" : "inline-block";
+        proxy.style.overflow  = "visible";
         proxy.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "nowrap";
-        proxy.style.boxSizing = "border-box";
         proxy.style.lineHeight = cs.lineHeight;
+        proxy.style.verticalAlign = "middle";
         proxy.textContent = el.value;
         el.insertAdjacentElement("afterend", proxy);
         el.style.display = "none";
         swaps.push({ el, proxy });
       });
 
+      // 4. Capture at full resolution
       const canvas = await window.html2canvas(doc, {
         scale: 3, useCORS: true, allowTaint: true,
         backgroundColor: "#fff", logging: false,
-        windowWidth: 816, scrollX: 0, scrollY: 0,
+        windowWidth: 900, scrollX: 0, scrollY: 0,
       });
 
-      // Restore everything
+      // 5. Restore everything
       swaps.forEach(({ el, proxy }) => { el.style.display = ""; proxy.remove(); });
       doc.style.zoom = prevZoom;
+      doc.style.paddingRight = prevPR;
 
+      // 6. Build PDF
       const img = canvas.toDataURL("image/png");
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation:"portrait", unit:"pt", format:"letter" });
