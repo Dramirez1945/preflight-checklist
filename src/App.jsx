@@ -479,14 +479,48 @@ function PrintOut({ d, done, back }) {
     try {
       if (!window.html2canvas) await loadLib("https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js");
       if (!window.jspdf)       await loadLib("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
-      const canvas = await window.html2canvas(docRef.current,{ scale:2, useCORS:true, backgroundColor:"#fff", logging:false });
-      const img    = canvas.toDataURL("image/jpeg",0.95);
+
+      const doc = docRef.current;
+
+      // Reset zoom so we always capture at full 816px resolution
+      const prevZoom = doc.style.zoom;
+      doc.style.zoom = "1";
+
+      // Swap inputs/textareas → divs so html2canvas captures their values
+      const swaps = [];
+      doc.querySelectorAll("input, textarea").forEach(el => {
+        const cs = window.getComputedStyle(el);
+        const proxy = document.createElement("div");
+        proxy.style.cssText = el.style.cssText;
+        proxy.style.display = el.tagName === "TEXTAREA" ? "block" : "inline-block";
+        proxy.style.width    = cs.width;
+        proxy.style.minHeight = cs.height;
+        proxy.style.overflow  = "hidden";
+        proxy.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "nowrap";
+        proxy.style.boxSizing = "border-box";
+        proxy.style.lineHeight = cs.lineHeight;
+        proxy.textContent = el.value;
+        el.insertAdjacentElement("afterend", proxy);
+        el.style.display = "none";
+        swaps.push({ el, proxy });
+      });
+
+      const canvas = await window.html2canvas(doc, {
+        scale: 3, useCORS: true, allowTaint: true,
+        backgroundColor: "#fff", logging: false,
+        windowWidth: 816, scrollX: 0, scrollY: 0,
+      });
+
+      // Restore everything
+      swaps.forEach(({ el, proxy }) => { el.style.display = ""; proxy.remove(); });
+      doc.style.zoom = prevZoom;
+
+      const img = canvas.toDataURL("image/png");
       const { jsPDF } = window.jspdf;
       const pdf = new jsPDF({ orientation:"portrait", unit:"pt", format:"letter" });
-      const m=20, mW=612-m*2, mH=792-m*2;
-      const sc=Math.min(mW/canvas.width, mH/canvas.height);
-      const fW=canvas.width*sc, fH=canvas.height*sc;
-      pdf.addImage(img,"JPEG",(612-fW)/2, m, fW, fH);
+      const m = 18, pw = 612-m*2, ph = 792-m*2;
+      const sc = Math.min(pw/canvas.width, ph/canvas.height);
+      pdf.addImage(img,"PNG",(612-canvas.width*sc)/2, m, canvas.width*sc, canvas.height*sc);
       pdf.save(`N${eTail}_Checklist_${eDate.replace(/\//g,"-")}.pdf`);
     } catch(e){ alert("PDF failed — use Print instead."); console.error(e); }
     finally{ setBusy(false); }
@@ -518,7 +552,7 @@ function PrintOut({ d, done, back }) {
               <div style={{ fontWeight:800, fontSize:"13pt", textAlign:"center", letterSpacing:2, fontFamily:"Arial,sans-serif", marginBottom:3, color:NAVY }}>ADVANCED AIR, LLC</div>
               <div style={{ fontWeight:700, fontSize:"9pt", textAlign:"center", letterSpacing:0.5, fontFamily:"Arial,sans-serif", color:"#333" }}>AIRCRAFT PREFLIGHT / POSTFLIGHT CHECKLIST</div>
               {/* Prominent info fields */}
-              <div style={{ display:"flex", gap:16, marginTop:10, padding:"10px 14px", background:"#f6f8fb", border:`1.5px solid ${NAVY}33`, borderRadius:10 }}>
+              <div style={{ display:"flex", gap:16, marginTop:10, padding:"12px 14px 10px", background:"#f6f8fb", border:`1.5px solid ${NAVY}33`, borderRadius:10 }}>
                 <FieldCell label="Name"        value={eName} onChange={setName}/>
                 <FieldCell label="Date"        value={eDate} onChange={setDate}/>
                 <FieldCell label="Cert. #"     value={eCert} onChange={setCert} mono/>
@@ -544,10 +578,16 @@ function PrintOut({ d, done, back }) {
                 <div style={{ background:"#b5b5b5", padding:"2.5px 5px", fontWeight:700, fontSize:"7pt", fontFamily:"Arial,sans-serif" }}>
                   NOTES
                 </div>
-                <textarea className="aa-field aa-textarea" value={notes} onChange={e=>setNotes(e.target.value)}
-                  placeholder="Click to add any pertinent info…"
-                  rows={7}
-                  style={{ width:"100%", border:"1px solid #c0c0c0", borderRadius:4, fontSize:"8pt", fontFamily:"Arial,sans-serif", padding:"2px 6px", color:"#111", outline:"none", boxSizing:"border-box", resize:"none", backgroundColor:"#fff" }}/>
+                <div style={{ position:"relative", border:"1px solid #c0c0c0", borderRadius:4, background:"#fff", minHeight:126 }}>
+                  {/* Ruled lines — actual DOM elements, captured by html2canvas */}
+                  {Array.from({length:7},(_,i)=>(
+                    <div key={i} style={{ position:"absolute", left:0, right:0, top:i*18+17, height:1, background:"#d8d8d8", pointerEvents:"none" }}/>
+                  ))}
+                  <textarea className="aa-field" value={notes} onChange={e=>setNotes(e.target.value)}
+                    placeholder="Click to add any pertinent info…"
+                    rows={7}
+                    style={{ display:"block", width:"100%", border:"none", borderRadius:4, fontSize:"8pt", fontFamily:"Arial,sans-serif", padding:"2px 6px", color:"#111", outline:"none", boxSizing:"border-box", resize:"none", background:"transparent", lineHeight:"18px", position:"relative", zIndex:1 }}/>
+                </div>
               </div>
             </div>
           </div>
