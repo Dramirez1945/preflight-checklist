@@ -71,7 +71,7 @@ input[type="date"]::-webkit-date-and-time-value {
 @media (max-width: 900px)  { .doc-page { zoom: 0.88; } }
 @media (max-width: 700px)  { .doc-page { zoom: 0.70; } }
 @media (max-width: 520px)  { .doc-page { zoom: 0.52; } }
-@media (max-width: 400px)  { .doc-page { zoom: 0.42; } }
+@media (max-width: 400px)  { .doc-page { zoom: 0.44; } .doc-outer { padding-left: 8px !important; padding-right: 8px !important; } }
 /* Toolbar: stack on very small screens */
 @media (max-width: 480px) {
   .print-toolbar { flex-direction: column; align-items: stretch !important; }
@@ -476,7 +476,7 @@ function SecBlock({ sec, initials, setInit }) {
           <div key={item.id} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", borderBottom:"1px solid #e0e0e0", padding:"1.5px 5px", minHeight:14 }}>
             <span style={{ flex:1, fontSize:"7pt", fontFamily:"Arial,sans-serif", lineHeight:1.2, color:"#111" }}>{item.t}</span>
             <input className="aa-field" value={initials[item.id]??""} onChange={e=>setInit(item.id,e.target.value.toUpperCase().slice(0,4))}
-              style={{ width:30, textAlign:"center", border:"1px solid transparent", borderLeft:"1px solid #ccc", fontSize:"7pt", fontWeight:700, fontFamily:"Arial,sans-serif", outline:"none", background:"transparent", padding:0, color:"#111", cursor:"text", borderRadius:3 }}/>
+              style={{ width:36, textAlign:"center", border:"1px solid transparent", borderLeft:"1px solid #ccc", fontSize:"7pt", fontWeight:700, fontFamily:"Arial,sans-serif", outline:"none", background:"transparent", padding:0, color:"#111", cursor:"text", borderRadius:3 }}/>
           </div>
         )
       )}
@@ -532,15 +532,17 @@ function PrintOut({ d, done, back }) {
         const cs   = window.getComputedStyle(el);
         const proxy = document.createElement("div");
         proxy.style.cssText   = el.style.cssText;           // copy inline styles
-        proxy.style.width     = rect.width  + "px";         // actual rendered width
+        // For % widths keep them so the proxy fills its parent naturally (fixes border-bottom span).
+        // For explicit px widths (tail#, initials, etc.) use the post-zoom pixel value.
+        const inlineW = el.style.width;
+        proxy.style.width     = (inlineW && inlineW.endsWith("%")) ? inlineW : rect.width + "px";
         proxy.style.minHeight = rect.height + "px";
-        proxy.style.display   = "block";                    // block so border spans full width (inline-block lets text overflow past box, making border appear narrow)
+        proxy.style.display   = "block";
         proxy.style.overflow  = "visible";
         proxy.style.whiteSpace = el.tagName === "TEXTAREA" ? "pre-wrap" : "nowrap";
         proxy.style.lineHeight = cs.lineHeight;
         proxy.style.verticalAlign = "middle";
-        // Explicitly set border-bottom from computed style — cssText may not reliably
-        // carry shorthand vs. longhand resolution, and html2canvas needs the exact values
+        // Explicit computed border-bottom so html2canvas renders it at the correct width
         proxy.style.borderBottomWidth = cs.borderBottomWidth;
         proxy.style.borderBottomStyle = cs.borderBottomStyle;
         proxy.style.borderBottomColor = cs.borderBottomColor;
@@ -590,7 +592,7 @@ function PrintOut({ d, done, back }) {
       </div>
 
       {/* Page preview */}
-      <div style={{ background:"#c0c0c0", padding:"28px 16px 44px", minHeight:"100vh" }}>
+      <div className="doc-outer" style={{ background:"#c0c0c0", padding:"28px 16px 44px", minHeight:"100vh" }}>
         <div ref={docRef} className="doc-page" style={{ position:"relative", background:"#ffffff", maxWidth:816, margin:"0 auto", padding:"26pt 30pt 22pt", boxSizing:"border-box", boxShadow:"0 8px 56px rgba(0,0,0,.28)" }}>
           <TopoWatermark/>
 
