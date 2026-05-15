@@ -248,11 +248,11 @@ function Home({ start, view }) {
       <div style={{ textAlign:"center" }}>
         <AirLogo/>
         <div style={{ fontFamily:SANS, fontWeight:400, fontSize:12, letterSpacing:3.5, color:"rgba(255,255,255,.45)", marginTop:28, marginBottom:50 }}>AIRCRAFT PREFLIGHT / POSTFLIGHT CHECKLIST</div>
-        <button className="aa-btn" style={{ background:A, color:"#0d1018", border:`2px solid ${A}`, padding:"17px 56px", fontFamily:SANS, fontSize:15, fontWeight:700, letterSpacing:0.5, cursor:"pointer", borderRadius:10 }} onClick={start}>
-          Generate Checklist
-        </button>
-        <div style={{ marginTop:14 }}>
-          <button className="aa-btn" style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"12px 36px", fontFamily:SANS, fontSize:13, fontWeight:600, letterSpacing:0.5, cursor:"pointer", borderRadius:10 }} onClick={view}>
+        <div style={{ display:"inline-flex", flexDirection:"column", gap:14, alignItems:"stretch" }}>
+          <button className="aa-btn" style={{ background:A, color:"#0d1018", border:`2px solid ${A}`, padding:"17px 56px", fontFamily:SANS, fontSize:15, fontWeight:700, letterSpacing:0.5, cursor:"pointer", borderRadius:10 }} onClick={start}>
+            Generate Checklist
+          </button>
+          <button className="aa-btn" style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"17px 56px", fontFamily:SANS, fontSize:15, fontWeight:700, letterSpacing:0.5, cursor:"pointer", borderRadius:10 }} onClick={view}>
             View Checklist
           </button>
         </div>
