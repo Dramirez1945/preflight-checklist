@@ -302,7 +302,7 @@ function ReviewChecklist({ onBack, onContinue }) {
                 const isChk = checked.has(item.id);
                 return (
                   <div key={item.id}
-                    style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"11px 14px", borderBottom:"1px solid rgba(255,255,255,.04)", cursor:"pointer", background:isChk?"rgba(74,222,128,.06)":"transparent" }}
+                    style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"16px 14px", borderBottom:"1px solid rgba(255,255,255,.04)", cursor:"pointer", background:isChk?"rgba(74,222,128,.06)":"transparent" }}
                     onClick={()=>toggle(item.id)}>
                     <span style={{ color:isChk?"#4ade80":"rgba(255,255,255,.32)", fontWeight:700, fontSize:16, width:18, flexShrink:0, lineHeight:1.2 }}>{isChk?"✓":"○"}</span>
                     <span style={{ fontSize:13, color:isChk?"rgba(255,255,255,.40)":"rgba(255,255,255,.85)", fontWeight:400, lineHeight:1.4, textDecoration:isChk?"line-through":"none" }}>{item.t}</span>
