@@ -211,8 +211,9 @@ export default function App() {
   const tog = id => setD(p=>{ const s=new Set(p.inc); s.has(id)?s.delete(id):s.add(id); return {...p,inc:s}; });
   const done = id => d.ok==="yes" || !d.inc.has(id);
 
-  if (view==="print") return <PrintOut d={d} done={done} back={()=>setView("wizard")}/>;
-  if (view==="home")  return <Home start={()=>{ setStep(0); setD(emptyState()); setView("wizard"); }}/>;
+  if (view==="print")  return <PrintOut d={d} done={done} back={()=>setView("wizard")}/>;
+  if (view==="review") return <ReviewChecklist onBack={()=>setView("home")} onContinue={()=>{ setStep(0); setD(emptyState()); setView("wizard"); }}/>;
+  if (view==="home")   return <Home start={()=>{ setStep(0); setD(emptyState()); setView("wizard"); }} view={()=>setView("review")}/>;
 
   return (
     <div className="app-fixed" style={{ background:"#0d1018", padding:"28px 20px", fontFamily:SANS, overflowY:"auto" }}>
@@ -240,7 +241,7 @@ export default function App() {
 }
 
 // ── Home ──────────────────────────────────────────────────────
-function Home({ start }) {
+function Home({ start, view }) {
   return (
     <div className="app-fixed" style={{ background:"#0d1018", display:"flex", alignItems:"center", justifyContent:"center" }}>
       <style>{GF}</style>
@@ -250,6 +251,11 @@ function Home({ start }) {
         <button className="aa-btn" style={{ background:A, color:"#0d1018", border:`2px solid ${A}`, padding:"17px 56px", fontFamily:SANS, fontSize:15, fontWeight:700, letterSpacing:0.5, cursor:"pointer", borderRadius:10 }} onClick={start}>
           Generate Checklist
         </button>
+        <div style={{ marginTop:14 }}>
+          <button className="aa-btn" style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"12px 36px", fontFamily:SANS, fontSize:13, fontWeight:600, letterSpacing:0.5, cursor:"pointer", borderRadius:10 }} onClick={view}>
+            View Checklist
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -258,6 +264,60 @@ function Home({ start }) {
 function AirLogo() {
   return (
     <img src="/logo.png" alt="Advanced Air" style={{ display:"block", margin:"0 auto", width:220, height:"auto", filter:"brightness(0) invert(1)" }}/>
+  );
+}
+
+// ── View Checklist (read-only walkaround reference) ───────────
+const TOTAL_ITEMS = ALL_SECS.reduce((n,sec)=>n + sec.items.filter(i=>!i.h).length, 0);
+
+function ReviewChecklist({ onBack, onContinue }) {
+  const [checked, setChecked] = useState(() => new Set());
+  const toggle = id => setChecked(p => { const s=new Set(p); s.has(id)?s.delete(id):s.add(id); return s; });
+  const pct = Math.round((checked.size / TOTAL_ITEMS) * 100);
+
+  return (
+    <div className="app-fixed" style={{ background:"#0d1018", padding:"28px 20px 20px", fontFamily:SANS, overflowY:"auto", display:"flex", flexDirection:"column" }}>
+      <style>{GF}</style>
+      <div className="wiz-wrap" style={{ maxWidth:480, margin:"0 auto", width:"100%", display:"flex", flexDirection:"column", flex:1, minHeight:0 }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
+          <span style={{ fontFamily:SANS, fontWeight:700, fontSize:13, color:A, letterSpacing:2 }}>ADVANCED AIR</span>
+          <span style={{ fontSize:12, color:"rgba(255,255,255,.35)", fontWeight:500 }}>{checked.size} of {TOTAL_ITEMS} checked</span>
+        </div>
+        <div style={{ height:3, background:"rgba(255,255,255,.08)", borderRadius:2, marginBottom:18 }}>
+          <div style={{ height:"100%", width:`${pct}%`, background:A, borderRadius:2, transition:"width .35s" }}/>
+        </div>
+        <div style={{ fontSize:13, color:"rgba(255,255,255,.35)", marginBottom:14 }}>Tap items as you walk the aircraft — nothing is saved</div>
+        <div style={{ flex:1, minHeight:0, overflowY:"auto", border:"2px solid rgba(94,185,255,.28)", borderRadius:10, marginBottom:16 }}>
+          {ALL_SECS.map(sec=>(
+            <div key={sec.id}>
+              <div style={{ background:"rgba(94,185,255,.10)", padding:"7px 14px", fontSize:10, color:A, letterSpacing:2, fontWeight:700, borderBottom:"1px solid rgba(94,185,255,.18)", position:"sticky", top:0 }}>
+                {sec.title}
+              </div>
+              {sec.items.map(item=>{
+                if (item.h) return (
+                  <div key={item.id} style={{ padding:"6px 14px", fontSize:11, fontStyle:"italic", color:"rgba(255,255,255,.45)", background:"rgba(255,255,255,.02)", borderBottom:"1px solid rgba(255,255,255,.04)", letterSpacing:0.5, fontWeight:600 }}>
+                    {item.t}
+                  </div>
+                );
+                const isChk = checked.has(item.id);
+                return (
+                  <div key={item.id}
+                    style={{ display:"flex", alignItems:"flex-start", gap:12, padding:"11px 14px", borderBottom:"1px solid rgba(255,255,255,.04)", cursor:"pointer", background:isChk?"rgba(74,222,128,.06)":"transparent" }}
+                    onClick={()=>toggle(item.id)}>
+                    <span style={{ color:isChk?"#4ade80":"rgba(255,255,255,.32)", fontWeight:700, fontSize:16, width:18, flexShrink:0, lineHeight:1.2 }}>{isChk?"✓":"○"}</span>
+                    <span style={{ fontSize:13, color:isChk?"rgba(255,255,255,.40)":"rgba(255,255,255,.85)", fontWeight:400, lineHeight:1.4, textDecoration:isChk?"line-through":"none" }}>{item.t}</span>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+        <div style={nvR}>
+          <button className="aa-btn" style={bkB} onClick={onBack}>← Back</button>
+          <button className="aa-btn" style={nxB} onClick={onContinue}>Continue to Generate →</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
