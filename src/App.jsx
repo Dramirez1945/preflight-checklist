@@ -226,7 +226,7 @@ export default function App() {
         <div style={{ height:3, background:"rgba(255,255,255,.08)", borderRadius:2, marginBottom:34 }}>
           <div style={{ height:"100%", width:`${pct}%`, background:A, borderRadius:2, transition:"width .35s" }}/>
         </div>
-        {cur==="tail"  && <TailStep  d={d} go={go}/>}
+        {cur==="tail"  && <TailStep  d={d} go={go} home={()=>setView("home")}/>}
         {cur==="check" && <CheckStep go={go} bk={bk}/>}
         {cur==="inc"   && <IncStep   d={d} tog={tog} go={go} bk={bk}/>}
         {cur==="tires" && <BoolStep  q="Were tires serviced?"  go={v=>go({tires:v})} bk={bk}/>}
@@ -322,7 +322,7 @@ function ReviewChecklist({ onBack, onContinue }) {
 }
 
 // ── Wizard steps ──────────────────────────────────────────────
-function TailStep({ d, go }) {
+function TailStep({ d, go, home }) {
   const [custom, setCustom] = useState(TAIL_NUMS.includes(d.tail) ? "" : d.tail);
   const hasCustom = custom.trim().length > 0;
   return (
@@ -347,6 +347,9 @@ function TailStep({ d, go }) {
         {hasCustom && (
           <button className="aa-btn" style={{...nxB, marginTop:1, whiteSpace:"nowrap"}} onClick={()=>go({tail:custom.trim()})}>Use →</button>
         )}
+      </div>
+      <div style={{ marginTop:22 }}>
+        <button className="aa-btn" style={bkB} onClick={home}>← Home</button>
       </div>
     </div>
   );
