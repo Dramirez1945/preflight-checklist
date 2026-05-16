@@ -34,9 +34,10 @@ const body = { fontFamily:SANS, fontWeight:400, fontSize:14.5, lineHeight:1.65, 
 export default function BookmarkletPage({ onBack }) {
   const [copied, setCopied] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [imgZoomed, setImgZoomed] = useState(false);
 
   useEffect(() => {
-    if (!zoomOpen) return;
+    if (!zoomOpen) { setImgZoomed(false); return; }
     const onKey = (e) => { if (e.key === "Escape") setZoomOpen(false); };
     window.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
@@ -178,20 +179,41 @@ export default function BookmarkletPage({ onBack }) {
 
       {zoomOpen && (
         <div
-          onClick={() => setZoomOpen(false)}
+          onClick={(e) => { if (e.target === e.currentTarget) setZoomOpen(false); }}
           role="dialog"
           aria-modal="true"
           aria-label="Enlarged example screenshot"
-          style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.92)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px", cursor:"zoom-out" }}>
+          style={{
+            position:"fixed", inset:0, background:"rgba(0,0,0,.92)", zIndex:9999,
+            display:"flex", alignItems:imgZoomed ? "flex-start" : "center", justifyContent:imgZoomed ? "flex-start" : "center",
+            padding:"16px",
+            overflow: imgZoomed ? "auto" : "hidden",
+            WebkitOverflowScrolling:"touch",
+            cursor: imgZoomed ? "zoom-out" : "default",
+          }}>
           <img src="/bookmarklet-example.png" alt="Example of the PHX MX Report overlay (enlarged)"
-            style={{ maxWidth:"100%", maxHeight:"100%", width:"auto", height:"auto", borderRadius:6, display:"block", boxShadow:"0 8px 40px rgba(0,0,0,.6)" }}/>
+            onClick={(e) => { e.stopPropagation(); setImgZoomed(z => !z); }}
+            style={{
+              display:"block",
+              borderRadius:6,
+              boxShadow:"0 8px 40px rgba(0,0,0,.6)",
+              cursor: imgZoomed ? "zoom-out" : "zoom-in",
+              ...(imgZoomed
+                ? { width:"auto", height:"auto", maxWidth:"none", maxHeight:"none" }
+                : { maxWidth:"100%", maxHeight:"100%", width:"auto", height:"auto" }),
+            }}/>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); setZoomOpen(false); }}
             aria-label="Close enlarged image"
-            style={{ position:"absolute", top:14, right:14, width:42, height:42, borderRadius:"50%", border:"1px solid rgba(255,255,255,.25)", background:"rgba(0,0,0,.55)", color:"#fff", fontSize:22, lineHeight:1, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            style={{ position:"fixed", top:14, right:14, width:42, height:42, borderRadius:"50%", border:"1px solid rgba(255,255,255,.25)", background:"rgba(0,0,0,.55)", color:"#fff", fontSize:22, lineHeight:1, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10000 }}>
             ×
           </button>
+          {!imgZoomed && (
+            <div style={{ position:"fixed", bottom:18, left:0, right:0, textAlign:"center", fontFamily:SANS, fontSize:11, letterSpacing:1.6, color:"rgba(255,255,255,.5)", textTransform:"uppercase", pointerEvents:"none" }}>
+              Tap image to zoom · Tap outside to close
+            </div>
+          )}
         </div>
       )}
     </div>
