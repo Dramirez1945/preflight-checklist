@@ -17,9 +17,6 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 @media (max-width: 720px) {
   .hub-cards { grid-template-columns: 1fr !important; }
 }
-@media (min-width: 721px) and (max-width: 1040px) {
-  .hub-cards { grid-template-columns: 1fr 1fr !important; }
-}
 `;
 
 const eyebrow = { fontFamily:SANS, fontWeight:500, fontSize:11, letterSpacing:3, color:"rgba(255,255,255,.45)", textTransform:"uppercase" };
@@ -41,7 +38,7 @@ export default function Hub({ onSelect }) {
         </div>
 
         {/* Cards */}
-        <div className="hub-cards" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:22, marginBottom:50 }}>
+        <div className="hub-cards" style={{ display:"grid", gridTemplateColumns:"repeat(2,1fr)", gap:22, marginBottom:50 }}>
 
           {/* Checklist card */}
           <div className="hub-card" style={cardStyle}>
@@ -100,6 +97,26 @@ export default function Hub({ onSelect }) {
               style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
               onClick={() => onSelect("zulu")}>
               Open Converter →
+            </button>
+          </div>
+
+          {/* Add to Home Screen card */}
+          <div className="hub-card" style={cardStyle}>
+            <div style={{ ...eyebrow, color:A, marginBottom:10 }}>Mobile App</div>
+            <h2 style={cardH2}>Add to Home Screen</h2>
+            <p style={cardDesc}>
+              Skip the browser — install the MX Tools portal as a full-screen app icon on your phone. Works on iPhone and Android in under a minute.
+            </p>
+            <ul style={featureList}>
+              <Feature>Works on iPhone (Safari) and Android (Chrome)</Feature>
+              <Feature>Opens full-screen — no browser bars or address bar</Feature>
+              <Feature>Icon lives on your home screen like a native app</Feature>
+              <Feature>One-time setup, about 30 seconds</Feature>
+            </ul>
+            <button className="hub-btn"
+              style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
+              onClick={() => onSelect("install")}>
+              View Setup Guide →
             </button>
           </div>
         </div>
