@@ -7,6 +7,8 @@ const ZULU_CSS = `
 html, body { overflow-x: hidden; max-width: 100vw; }
 .zulu-clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .zulu-dir-btn { transition: background .15s ease, border-color .15s ease, color .15s ease; }
+select option { background: #111827; color: #fff; }
+select option:disabled { color: rgba(255,255,255,.3); }
 @media (max-width: 520px) {
   .zulu-clocks { grid-template-columns: 1fr !important; }
 }
@@ -72,10 +74,11 @@ export default function ZuluPage({ onBack }) {
   const zulu    = fmtParts(now, "UTC");
 
   const computeResult = () => {
-    if (!manTime || !manDate) return null;
+    if (manTime.length !== 4 || !manDate) return null;
     const [Y, Mo, D] = manDate.split("-").map(Number);
-    const [H, Min]   = manTime.split(":").map(Number);
-    if (isNaN(Y) || isNaN(H)) return null;
+    const H   = parseInt(manTime.slice(0, 2));
+    const Min = parseInt(manTime.slice(2, 4));
+    if (isNaN(Y) || isNaN(H) || isNaN(Min) || H > 23 || Min > 59) return null;
 
     if (direction === "local2zulu") {
       const utcDate = wallClockToUTC(Y, Mo, D, H, Min, tz);
@@ -87,7 +90,9 @@ export default function ZuluPage({ onBack }) {
       const sameDay = utcDate.toISOString().split("T")[0] === manDate;
       return { text: `${uh}${um}Z`, detail: sameDay ? null : ud };
     } else {
-      const utcDate = new Date(`${manDate}T${manTime}:00Z`);
+      const hStr = manTime.slice(0, 2);
+      const mStr = manTime.slice(2, 4);
+      const utcDate = new Date(`${manDate}T${hStr}:${mStr}:00Z`);
       if (isNaN(utcDate.getTime())) return null;
       const lh = new Intl.DateTimeFormat("en-US", {
         timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false,
@@ -160,11 +165,11 @@ export default function ZuluPage({ onBack }) {
           <div style={{ ...eyebrow, marginBottom: 10 }}>Local Timezone</div>
           <select
             value={tz} onChange={e => setTz(e.target.value)}
-            style={{ ...inputStyle, cursor: "pointer" }}
+            style={{ ...inputStyle, background: "#111827", cursor: "pointer" }}
           >
             <option value="America/Phoenix">Phoenix, AZ (UTC-7, no DST)</option>
             <option value="America/Los_Angeles">Hawthorne, CA (America/Los_Angeles, DST)</option>
-            <option disabled>──────────────</option>
+            <optgroup label="─────────────────────────────"></optgroup>
             <option value="America/New_York">Eastern (ET)</option>
             <option value="America/Chicago">Central (CT)</option>
             <option value="America/Denver">Mountain (MT)</option>
@@ -221,7 +226,12 @@ export default function ZuluPage({ onBack }) {
               <div>
                 <div style={{ ...eyebrow, marginBottom: 6 }}>Time</div>
                 <input
-                  type="time" value={manTime} onChange={e => setManTime(e.target.value)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  placeholder="0415"
+                  value={manTime}
+                  onChange={e => setManTime(e.target.value.replace(/\D/g, "").slice(0, 4))}
                   style={inputStyle}
                 />
               </div>
@@ -277,7 +287,7 @@ export default function ZuluPage({ onBack }) {
                   </>
                 ) : (
                   <div style={{ color: "rgba(255,255,255,.2)", fontSize: 14 }}>
-                    {manTime ? "—" : "Enter a time above"}
+                    {manTime ? "—" : "Enter 4-digit time (e.g. 0415)"}
                   </div>
                 )}
               </div>
