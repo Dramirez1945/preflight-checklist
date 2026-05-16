@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { A, A_RGB, SANS, BG } from "../theme.js";
 import { bookmarkletUrl } from "./bookmarkletUrl.js";
 
@@ -34,10 +34,13 @@ const body = { fontFamily:SANS, fontWeight:400, fontSize:14.5, lineHeight:1.65, 
 export default function BookmarkletPage({ onBack }) {
   const [copied, setCopied] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
-  const [imgZoomed, setImgZoomed] = useState(false);
+  const [scale, setScale] = useState(1);
+  const [tx, setTx] = useState(0);
+  const [ty, setTy] = useState(0);
+  const gesture = useRef({ pinching:false, panning:false, startDist:0, startScale:1, startX:0, startY:0, startTx:0, startTy:0 });
 
   useEffect(() => {
-    if (!zoomOpen) { setImgZoomed(false); return; }
+    if (!zoomOpen) { setScale(1); setTx(0); setTy(0); return; }
     const onKey = (e) => { if (e.key === "Escape") setZoomOpen(false); };
     window.addEventListener("keydown", onKey);
     const prevOverflow = document.body.style.overflow;
@@ -47,6 +50,44 @@ export default function BookmarkletPage({ onBack }) {
       document.body.style.overflow = prevOverflow;
     };
   }, [zoomOpen]);
+
+  const distBetween = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+
+  const onImgTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      gesture.current.pinching = true;
+      gesture.current.panning = false;
+      gesture.current.startDist = distBetween(e.touches[0], e.touches[1]);
+      gesture.current.startScale = scale;
+    } else if (e.touches.length === 1 && scale > 1) {
+      e.preventDefault();
+      gesture.current.panning = true;
+      gesture.current.startX = e.touches[0].clientX;
+      gesture.current.startY = e.touches[0].clientY;
+      gesture.current.startTx = tx;
+      gesture.current.startTy = ty;
+    }
+  };
+
+  const onImgTouchMove = (e) => {
+    if (gesture.current.pinching && e.touches.length === 2) {
+      e.preventDefault();
+      const d = distBetween(e.touches[0], e.touches[1]);
+      const next = Math.max(1, Math.min(4, gesture.current.startScale * (d / gesture.current.startDist)));
+      setScale(next);
+      if (next <= 1.001) { setTx(0); setTy(0); }
+    } else if (gesture.current.panning && e.touches.length === 1) {
+      e.preventDefault();
+      setTx(gesture.current.startTx + (e.touches[0].clientX - gesture.current.startX));
+      setTy(gesture.current.startTy + (e.touches[0].clientY - gesture.current.startY));
+    }
+  };
+
+  const onImgTouchEnd = (e) => {
+    if (e.touches.length < 2) gesture.current.pinching = false;
+    if (e.touches.length === 0) gesture.current.panning = false;
+  };
 
   const copy = async () => {
     try {
@@ -185,22 +226,24 @@ export default function BookmarkletPage({ onBack }) {
           aria-label="Enlarged example screenshot"
           style={{
             position:"fixed", inset:0, background:"rgba(0,0,0,.92)", zIndex:9999,
-            display:"flex", alignItems:imgZoomed ? "flex-start" : "center", justifyContent:imgZoomed ? "flex-start" : "center",
-            padding:"16px",
-            overflow: imgZoomed ? "auto" : "hidden",
-            WebkitOverflowScrolling:"touch",
-            cursor: imgZoomed ? "zoom-out" : "default",
+            display:"flex", alignItems:"center", justifyContent:"center",
+            padding:"16px", overflow:"hidden", touchAction:"none",
           }}>
           <img src="/bookmarklet-example.png" alt="Example of the PHX MX Report overlay (enlarged)"
-            onClick={(e) => { e.stopPropagation(); setImgZoomed(z => !z); }}
+            onTouchStart={onImgTouchStart}
+            onTouchMove={onImgTouchMove}
+            onTouchEnd={onImgTouchEnd}
+            onDoubleClick={() => { if (scale === 1) { setScale(2); } else { setScale(1); setTx(0); setTy(0); } }}
             style={{
               display:"block",
-              borderRadius:6,
-              boxShadow:"0 8px 40px rgba(0,0,0,.6)",
-              cursor: imgZoomed ? "zoom-out" : "zoom-in",
-              ...(imgZoomed
-                ? { width:"auto", height:"auto", maxWidth:"none", maxHeight:"none" }
-                : { maxWidth:"100%", maxHeight:"100%", width:"auto", height:"auto" }),
+              maxWidth:"100%", maxHeight:"100%", width:"auto", height:"auto",
+              borderRadius:6, boxShadow:"0 8px 40px rgba(0,0,0,.6)",
+              transform:`translate(${tx}px, ${ty}px) scale(${scale})`,
+              transformOrigin:"center center",
+              transition: gesture.current.pinching || gesture.current.panning ? "none" : "transform .15s ease",
+              touchAction:"none",
+              userSelect:"none",
+              WebkitUserSelect:"none",
             }}/>
           <button
             type="button"
@@ -209,11 +252,9 @@ export default function BookmarkletPage({ onBack }) {
             style={{ position:"fixed", top:14, right:14, width:42, height:42, borderRadius:"50%", border:"1px solid rgba(255,255,255,.25)", background:"rgba(0,0,0,.55)", color:"#fff", fontSize:22, lineHeight:1, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", zIndex:10000 }}>
             ×
           </button>
-          {!imgZoomed && (
-            <div style={{ position:"fixed", bottom:18, left:0, right:0, textAlign:"center", fontFamily:SANS, fontSize:11, letterSpacing:1.6, color:"rgba(255,255,255,.5)", textTransform:"uppercase", pointerEvents:"none" }}>
-              Tap image to zoom · Tap outside to close
-            </div>
-          )}
+          <div style={{ position:"fixed", bottom:18, left:0, right:0, textAlign:"center", fontFamily:SANS, fontSize:11, letterSpacing:1.6, color:"rgba(255,255,255,.5)", textTransform:"uppercase", pointerEvents:"none" }}>
+            {scale > 1 ? "Drag to pan · Pinch to zoom" : "Pinch to zoom · Tap outside to close"}
+          </div>
         </div>
       )}
     </div>
