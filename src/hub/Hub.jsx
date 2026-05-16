@@ -33,7 +33,7 @@ export default function Hub({ onSelect }) {
           <div style={{ ...eyebrow, marginBottom:18 }}>MX Tools Portal</div>
           <h1 style={{ fontFamily:SANS, fontWeight:700, fontSize:34, color:"#fff", margin:"0 0 10px", letterSpacing:0.3 }}>Your tools. One place.</h1>
           <p style={{ fontFamily:SANS, fontWeight:400, fontSize:14.5, color:"rgba(255,255,255,.6)", margin:0 }}>
-            Built for Advanced Air mechanics at PHX. Select a tool below.
+            Built for Advanced Air mechanics. Select a tool below.
           </p>
         </div>
 
@@ -63,7 +63,7 @@ export default function Hub({ onSelect }) {
           {/* Bookmarklet card */}
           <div className="hub-card" style={cardStyle}>
             <div style={{ ...eyebrow, color:A, marginBottom:10 }}>JetInsight</div>
-            <h2 style={cardH2}>PHX Shift Filter</h2>
+            <h2 style={cardH2}>JetInsight Shift Filter</h2>
             <p style={cardDesc}>
               One-click browser bookmark that strips JetInsight down to only your planes, your station, during your exact shift window.
             </p>
@@ -84,7 +84,7 @@ export default function Hub({ onSelect }) {
         {/* Footer */}
         <div style={{ marginTop:"auto", display:"flex", justifyContent:"space-between", alignItems:"center", fontFamily:SANS, fontSize:10, letterSpacing:2.2, color:"rgba(255,255,255,.28)", textTransform:"uppercase", flexWrap:"wrap", gap:10 }}>
           <span>Advanced Air, LLC — Internal Use Only</span>
-          <span>PHX Maintenance</span>
+          <span>MX Tools</span>
         </div>
       </div>
     </div>

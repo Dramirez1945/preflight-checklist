@@ -110,7 +110,7 @@ export default function BookmarkletPage({ onBack }) {
           <button className="bm-btn"
             style={{ background:"transparent", border:"2px solid rgba(255,255,255,.14)", color:"rgba(255,255,255,.55)", padding:"8px 16px", fontFamily:SANS, fontSize:13, fontWeight:500, cursor:"pointer", borderRadius:8 }}
             onClick={onBack}>← Back to hub</button>
-          <span style={eyebrow}>JetInsight PHX Shift Filter</span>
+          <span style={eyebrow}>JetInsight Shift Filter</span>
         </div>
 
         {/* Intro */}
@@ -118,9 +118,9 @@ export default function BookmarkletPage({ onBack }) {
           <div style={{ display:"inline-block", fontFamily:SANS, fontWeight:700, fontSize:10, letterSpacing:2.4, color:A, background:`rgba(${A_RGB},.12)`, border:`1px solid rgba(${A_RGB},.45)`, padding:"5px 11px", borderRadius:999, marginBottom:18 }}>
             ONE-TIME SETUP · 60 SECONDS
           </div>
-          <h1 style={{ fontFamily:SANS, fontWeight:700, fontSize:30, color:"#fff", margin:"0 0 14px", letterSpacing:0.2 }}>JetInsight PHX Shift Filter</h1>
+          <h1 style={{ fontFamily:SANS, fontWeight:700, fontSize:30, color:"#fff", margin:"0 0 14px", letterSpacing:0.2 }}>JetInsight Shift Filter</h1>
           <p style={body}>
-            JetInsight shows every flight, every plane, every station across the entire fleet. That's a lot of noise when all you need is your planes, at PHX, during your shift.
+            JetInsight shows every flight, every plane, every station across the entire fleet. That's a lot of noise when all you need is your planes, your station, during your shift.
           </p>
           <p style={{ ...body, marginTop:12 }}>
             This bookmark script is a small piece of JavaScript you install once. After that, one click while JetInsight is open instantly filters the schedule down to exactly what you need.
@@ -131,9 +131,9 @@ export default function BookmarkletPage({ onBack }) {
         <div style={panel}>
           <div style={{ ...eyebrow, color:A, marginBottom:12 }}>What it actually shows</div>
           <ul style={{ ...body, paddingLeft:18, margin:0 }}>
-            <li>PHX flights only — anything not arriving or departing PHX is stripped out</li>
-            <li>0600–1700 MST shift window — after-hours PHX flights still listed as FYI</li>
-            <li>Crew swaps removed, PHX-critical departure/arrival times highlighted</li>
+            <li>Your station only — flights not arriving or departing your station are stripped out</li>
+            <li>Your shift window — flights outside it still listed as FYI</li>
+            <li>Crew swaps removed, station-critical departure/arrival times highlighted</li>
             <li>Open MEL cards per aircraft (collapsible) — category, item #, expiry, pilot notes, sign-off status</li>
             <li>CAMP compliance flags — warnings and expired items only</li>
             <li>MX block summary at the bottom with full notes</li>
@@ -150,7 +150,7 @@ export default function BookmarkletPage({ onBack }) {
             onClick={() => setZoomOpen(true)}
             aria-label="Enlarge example screenshot"
             style={{ width:"100%", background:"rgba(0,0,0,.35)", border:"1px solid rgba(255,255,255,.06)", borderRadius:10, padding:14, display:"flex", justifyContent:"center", cursor:"zoom-in", appearance:"none", font:"inherit", color:"inherit" }}>
-            <img src="/bookmarklet-example.png" alt="Example of the PHX MX Report overlay — flight schedule, MEL cards, CAMP flags"
+            <img src="/bookmarklet-example.png" alt="Example of the MX Report overlay — flight schedule, MEL cards, CAMP flags"
               style={{ maxWidth:"100%", height:"auto", borderRadius:6, display:"block", pointerEvents:"none" }}/>
           </button>
           <div style={{ fontSize:12, color:"rgba(255,255,255,.4)", marginTop:10, fontStyle:"italic", textAlign:"center" }}>
@@ -190,7 +190,7 @@ export default function BookmarkletPage({ onBack }) {
             Right-click any empty space on your bookmarks bar and choose <b>Add page…</b> or <b>Add new bookmark</b>. A dialog box will appear with Name and URL fields.
           </Step>
           <Step n={4} title="Name it and paste the code into the URL field">
-            Give it a short name you'll recognize — something like <b>✈ PHX Filter</b> or <b>JetInsight PHX</b>. Then click into the URL field, select all (Ctrl+A), and paste your copied code. Click Save.
+            Give it a short name you'll recognize — something like <b>✈ Shift Filter</b> or <b>JetInsight</b>. Then click into the URL field, select all (Ctrl+A), and paste your copied code. Click Save.
           </Step>
           <Step n={5} title="Navigate to JetInsight and log in normally">
             Go to your normal JetInsight URL (<code style={cd}>portal.jetinsight.com</code>) and sign in as usual. Navigate to the schedule or calendar view — you don't need to do anything special on the page.
@@ -214,7 +214,7 @@ export default function BookmarkletPage({ onBack }) {
         </div>
 
         <div style={{ textAlign:"center", marginTop:30, fontFamily:SANS, fontSize:10, letterSpacing:2.2, color:"rgba(255,255,255,.22)" }}>
-          ADVANCED AIR, LLC · PHX MAINTENANCE · INTERNAL USE ONLY
+          ADVANCED AIR, LLC · INTERNAL USE ONLY
         </div>
       </div>
 
@@ -229,7 +229,7 @@ export default function BookmarkletPage({ onBack }) {
             display:"flex", alignItems:"center", justifyContent:"center",
             padding:"16px", overflow:"hidden", touchAction:"none",
           }}>
-          <img src="/bookmarklet-example.png" alt="Example of the PHX MX Report overlay (enlarged)"
+          <img src="/bookmarklet-example.png" alt="Example of the MX Report overlay (enlarged)"
             onTouchStart={onImgTouchStart}
             onTouchMove={onImgTouchMove}
             onTouchEnd={onImgTouchEnd}
