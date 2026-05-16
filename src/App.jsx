@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Hub from "./hub/Hub.jsx";
 import ChecklistApp from "./checklist/ChecklistApp.jsx";
 import BookmarkletPage from "./bookmarklet/BookmarkletPage.jsx";
+import ZuluPage from "./zulu/ZuluPage.jsx";
 import { SANS } from "./theme.js";
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
     );
   }
   if (view === "bookmarklet") return <BookmarkletPage onBack={() => setView("hub")}/>;
+  if (view === "zulu")        return <ZuluPage        onBack={() => setView("hub")}/>;
   return <Hub onSelect={setView}/>;
 }
 

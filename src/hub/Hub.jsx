@@ -17,6 +17,9 @@ html, body { overflow-x: hidden; max-width: 100vw; }
 @media (max-width: 720px) {
   .hub-cards { grid-template-columns: 1fr !important; }
 }
+@media (min-width: 721px) and (max-width: 1040px) {
+  .hub-cards { grid-template-columns: 1fr 1fr !important; }
+}
 `;
 
 const eyebrow = { fontFamily:SANS, fontWeight:500, fontSize:11, letterSpacing:3, color:"rgba(255,255,255,.45)", textTransform:"uppercase" };
@@ -38,7 +41,7 @@ export default function Hub({ onSelect }) {
         </div>
 
         {/* Cards */}
-        <div className="hub-cards" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:22, marginBottom:50 }}>
+        <div className="hub-cards" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:22, marginBottom:50 }}>
 
           {/* Checklist card */}
           <div className="hub-card" style={cardStyle}>
@@ -77,6 +80,26 @@ export default function Hub({ onSelect }) {
               style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
               onClick={() => onSelect("bookmarklet")}>
               View Setup Guide →
+            </button>
+          </div>
+
+          {/* Zulu converter card */}
+          <div className="hub-card" style={cardStyle}>
+            <div style={{ ...eyebrow, color:A, marginBottom:10 }}>Zulu Time</div>
+            <h2 style={cardH2}>Zulu Converter</h2>
+            <p style={cardDesc}>
+              Live side-by-side clocks plus a manual converter — flip any local time to Zulu (or back) in one step.
+            </p>
+            <ul style={featureList}>
+              <Feature>Live local &amp; Zulu clocks — date shown for rollover</Feature>
+              <Feature>Manual converter updates without a submit button</Feature>
+              <Feature>0415Z format output with one-click copy</Feature>
+              <Feature>Timezone selector persists across page refreshes</Feature>
+            </ul>
+            <button className="hub-btn"
+              style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
+              onClick={() => onSelect("zulu")}>
+              Open Converter →
             </button>
           </div>
         </div>
