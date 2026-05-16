@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Hub from "./hub/Hub.jsx";
 import ChecklistApp from "./checklist/ChecklistApp.jsx";
 import BookmarkletPage from "./bookmarklet/BookmarkletPage.jsx";
@@ -6,6 +6,10 @@ import { SANS } from "./theme.js";
 
 export default function App() {
   const [view, setView] = useState("hub");
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
 
   if (view === "checklist") {
     return (
