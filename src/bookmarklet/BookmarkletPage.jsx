@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { A, A_RGB, SANS, BG } from "../theme.js";
 import { bookmarkletUrl } from "./bookmarkletUrl.js";
 
@@ -33,6 +33,19 @@ const body = { fontFamily:SANS, fontWeight:400, fontSize:14.5, lineHeight:1.65, 
 
 export default function BookmarkletPage({ onBack }) {
   const [copied, setCopied] = useState(false);
+  const [zoomOpen, setZoomOpen] = useState(false);
+
+  useEffect(() => {
+    if (!zoomOpen) return;
+    const onKey = (e) => { if (e.key === "Escape") setZoomOpen(false); };
+    window.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [zoomOpen]);
 
   const copy = async () => {
     try {
@@ -90,12 +103,16 @@ export default function BookmarkletPage({ onBack }) {
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", marginBottom:12 }}>
             <div style={{ ...eyebrow, color:A }}>Example — what you'll see after clicking the bookmark</div>
           </div>
-          <div style={{ background:"rgba(0,0,0,.35)", border:"1px solid rgba(255,255,255,.06)", borderRadius:10, padding:14, display:"flex", justifyContent:"center" }}>
+          <button
+            type="button"
+            onClick={() => setZoomOpen(true)}
+            aria-label="Enlarge example screenshot"
+            style={{ width:"100%", background:"rgba(0,0,0,.35)", border:"1px solid rgba(255,255,255,.06)", borderRadius:10, padding:14, display:"flex", justifyContent:"center", cursor:"zoom-in", appearance:"none", font:"inherit", color:"inherit" }}>
             <img src="/bookmarklet-example.png" alt="Example of the PHX MX Report overlay — flight schedule, MEL cards, CAMP flags"
-              style={{ maxWidth:"100%", height:"auto", borderRadius:6, display:"block" }}/>
-          </div>
+              style={{ maxWidth:"100%", height:"auto", borderRadius:6, display:"block", pointerEvents:"none" }}/>
+          </button>
           <div style={{ fontSize:12, color:"rgba(255,255,255,.4)", marginTop:10, fontStyle:"italic", textAlign:"center" }}>
-            Illustrative — actual tail numbers, MELs, and times will reflect your real schedule.
+            Tap the image to enlarge · Illustrative — actual tails, MELs, and times will reflect your real schedule.
           </div>
         </div>
 
@@ -158,6 +175,25 @@ export default function BookmarkletPage({ onBack }) {
           ADVANCED AIR, LLC · PHX MAINTENANCE · INTERNAL USE ONLY
         </div>
       </div>
+
+      {zoomOpen && (
+        <div
+          onClick={() => setZoomOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged example screenshot"
+          style={{ position:"fixed", inset:0, background:"rgba(0,0,0,.92)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px", cursor:"zoom-out" }}>
+          <img src="/bookmarklet-example.png" alt="Example of the PHX MX Report overlay (enlarged)"
+            style={{ maxWidth:"100%", maxHeight:"100%", width:"auto", height:"auto", borderRadius:6, display:"block", boxShadow:"0 8px 40px rgba(0,0,0,.6)" }}/>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setZoomOpen(false); }}
+            aria-label="Close enlarged image"
+            style={{ position:"absolute", top:14, right:14, width:42, height:42, borderRadius:"50%", border:"1px solid rgba(255,255,255,.25)", background:"rgba(0,0,0,.55)", color:"#fff", fontSize:22, lineHeight:1, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }
