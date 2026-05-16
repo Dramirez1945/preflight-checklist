@@ -1,5 +1,8 @@
 import { A, A_RGB, SANS, BG } from "../theme.js";
 
+// Update this URL after deploying mx-passdown-generator to Vercel
+const PASSDOWN_URL = "https://mx-passdown-generator.vercel.app";
+
 const HUB_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 * { box-sizing: border-box; }
@@ -117,6 +120,26 @@ export default function Hub({ onSelect }) {
               style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
               onClick={() => onSelect("install")}>
               View Setup Guide →
+            </button>
+          </div>
+
+          {/* Passdown Report card */}
+          <div className="hub-card" style={cardStyle}>
+            <div style={{ ...eyebrow, color:A, marginBottom:10 }}>MX Passdown</div>
+            <h2 style={cardH2}>Passdown Report Generator</h2>
+            <p style={cardDesc}>
+              Pull live JetInsight data — Scheduled MX, open MELs, mechanic absences — into an editable report draft. Review, correct, then copy text for Teams or download a styled PDF.
+            </p>
+            <ul style={featureList}>
+              <Feature>Auto-pulls Scheduled MX, MELs &amp; calendar absences</Feature>
+              <Feature>Every field editable — nothing is locked</Feature>
+              <Feature>Copy plain text for Teams or download a styled PDF</Feature>
+              <Feature>MEL expirations flagged automatically when close</Feature>
+            </ul>
+            <button className="hub-btn"
+              style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
+              onClick={() => window.open(PASSDOWN_URL, "_blank")}>
+              Open Tool →
             </button>
           </div>
         </div>
