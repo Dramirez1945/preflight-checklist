@@ -1,8 +1,5 @@
 import { A, A_RGB, SANS, BG } from "../theme.js";
 
-// Update this URL after deploying mx-passdown-generator to Vercel
-const PASSDOWN_URL = "https://mx-passdown-generator.vercel.app";
-
 const HUB_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 * { box-sizing: border-box; }
@@ -138,8 +135,8 @@ export default function Hub({ onSelect }) {
             </ul>
             <button className="hub-btn"
               style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
-              onClick={() => window.open(PASSDOWN_URL, "_blank")}>
-              Open Tool →
+              onClick={() => onSelect("passdown")}>
+              View Setup Guide →
             </button>
           </div>
         </div>
