@@ -45,13 +45,13 @@ export default function Hub({ onSelect }) {
             <div style={{ ...eyebrow, color:A, marginBottom:10 }}>Preflight / Postflight</div>
             <h2 style={cardH2}>Checklist Generator</h2>
             <p style={cardDesc}>
-              Auto-fill your King Air B300 preflight or postflight checklist and export a print-ready PDF in under a minute.
+              Auto-fill any of your preflight or postflight checklists — King Air B300, Challenger 604, G450, or Universal — and export a print-ready PDF in under a minute.
             </p>
             <ul style={featureList}>
+              <Feature>Four aircraft types, one tap to switch</Feature>
               <Feature>Auto-fills name, cert # &amp; initials</Feature>
               <Feature>Handles tires, O₂, and oil service logging</Feature>
               <Feature>Every field editable before export</Feature>
-              <Feature>Topo watermark — letter-size print ready</Feature>
             </ul>
             <button className="hub-btn"
               style={{ background:A, color:"#0d1018", border:`2px solid ${A}`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%" }}
