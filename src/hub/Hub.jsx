@@ -54,7 +54,7 @@ export default function Hub({ onSelect }) {
               <Feature>Every field editable before export</Feature>
             </ul>
             <button className="hub-btn"
-              style={{ background:A, color:"#0d1018", border:`2px solid ${A}`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%" }}
+              style={{ background:A, color:"#0d1018", border:`2px solid ${A}`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
               onClick={() => onSelect("checklist")}>
               Open Checklist →
             </button>
@@ -74,7 +74,7 @@ export default function Hub({ onSelect }) {
               <Feature>No extensions, no logins, no extra tools</Feature>
             </ul>
             <button className="hub-btn"
-              style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%" }}
+              style={{ background:"transparent", color:A, border:`2px solid rgba(${A_RGB},.45)`, padding:"13px 24px", fontFamily:SANS, fontSize:14, fontWeight:700, letterSpacing:0.4, cursor:"pointer", borderRadius:10, width:"100%", marginTop:"auto" }}
               onClick={() => onSelect("bookmarklet")}>
               View Setup Guide →
             </button>
